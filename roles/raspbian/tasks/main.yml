@@ -1,0 +1,45 @@
+---
+
+- name: Add identity key to authorized keys on host
+  authorized_key: 
+    user: pi
+    key: "{{ lookup('file', ssh_identity_key) }}"
+  register: add_identity_key
+  when: ssh_identity_key is defined
+
+- name: Disable password and host based authentication
+  become: true
+  lineinfile: 
+    dest: /etc/ssh/ssh_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: '^#?\s*PasswordAuthentication ', line: 'PasswordAuthentication no' }
+    - { regexp: '^#?\s*?HostbasedAuthentication ', line: 'HostbasedAuthentication no' }
+    - { regexp: '^#?\s*?ChallengeResponseAuthentication ', line: 'ChallengeResponseAuthentication no' }
+    - { regexp: '^#?\s*?UsePAM ', line: 'UsePAM no' }
+  when: add_identity_key is success and not add_identity_key is skipped
+  notify: restart sshd
+
+- name: lock pi user's password
+  become: true
+  user:
+    name: pi
+    password_lock: yes
+  when: add_identity_key is success and not add_identity_key is skipped
+
+- name: Update all packages to the latest version
+  become: true
+  apt:
+    upgrade: dist
+    update_cache: yes
+
+- name: Remove useless packages from the cache
+  become: true
+  apt:
+    autoclean: yes
+
+- name: Remove dependencies that are no longer required
+  become: true
+  apt:
+    autoremove: yes
