@@ -2,7 +2,7 @@
 
 Prepare (and update) a raspbian pi to run Robot Operating System.
 
-Assumes a Rasbian Jessie Lite imaged Raspberry Pi 3B+.
+Assumes a Rasbian Stretch Lite imaged Raspberry Pi 3B+.
 
 Uses the following roles:
   - raspbian: updates all packages and optionally copies an SSH identity to the pi user and disables password authentication
