@@ -33,22 +33,15 @@ ros ansible_host=192.168.3.157
 
 ### install-ros.yml
 
-Configures raspbian and install ROS, specifying the SSH identity you want to use (only required the first time):
+Configures raspbian, installs ROS and a robot specific workspace:
 
 ```bash
-ansible-playbook install-ros.yml --extra-vars "ssh_identity_key=~/.ssh/id_rsa.pub"
-```
-
-### install-workspace.yml
-
-Installs/updates the workspace:
-
-```bash
-ansible-playbook install-workspace.yml
+ansible-playbook install-ros.yml
 ```
 
 There are some `--extra-vars` that can be defined when running the playbook:
-- `force_build` when set will force the catkin workspace to rebuilt. Useful for dealing with compilation errors when the workspace itself hasn't changed.
+- `ssh_identity_key`: copy an SSH identity and disable insecure authentication method (required once only)
+- `force_build`: force the catkin workspace to rebuilt. Useful for dealing with compilation errors when the workspace itself hasn't changed.
 
 ## TODO
 

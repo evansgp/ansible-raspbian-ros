@@ -1,7 +1,0 @@
----
-
-- name: Install ROS stack on Raspbian lite
-  hosts: ros
-  remote_user: pi
-  roles:
-    - workspace
