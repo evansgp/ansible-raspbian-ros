@@ -1,0 +1,41 @@
+---
+
+- name: Check whether the catkin workspace exists
+  stat:
+    path: /home/pi/ros_catkin_ws
+  register: existing_workspace
+
+- name: Copy catkin workspace
+  copy:
+    src: ros_catkin_ws
+    dest: /home/pi 
+  register: updated_workspace
+
+- name: Initialise catkin workspace
+  command: wstool init src kinetic-ros_comm-wet.rosinstall
+  args:
+    chdir: /home/pi/ros_catkin_ws
+  when: 
+    - updated_workspace.changed
+    - not existing_workspace.stat.exists
+
+- name: Update catkin workspace
+  command: wstool update -t src
+  args:
+    chdir: /home/pi/ros_catkin_ws
+  when: 
+    - updated_workspace.changed
+    - existing_workspace.stat.exists
+
+- name: Resolve catkin dependencies
+  command: rosdep install -y --from-paths src --ignore-src --rosdistro kinetic -r --os=debian:stretch
+  args:
+    chdir: /home/pi/ros_catkin_ws
+  when: updated_workspace.changed
+
+- name: Build catkin workspace
+  become: true
+  shell: ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/kinetic
+  args:
+    chdir: /home/pi/ros_catkin_ws
+  when: updated_workspace.changed
