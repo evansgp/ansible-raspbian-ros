@@ -5,3 +5,7 @@
   service:
     name: ssh
     state: restarted
+
+- name: reboot pi
+  become: true
+  reboot:

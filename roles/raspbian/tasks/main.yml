@@ -43,3 +43,27 @@
   become: true
   apt:
     autoremove: yes
+
+- name: Set overclock settings
+  become: true
+  lineinfile: 
+    dest: /boot/config.txt
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: 'arm_freq', line: "arm_freq={{ config_arm_freq }}" }
+    - { regexp: 'core_freq', line: "core_freq={{ config_core_freq }}" }
+    - { regexp: 'sdram_freq', line: "sdram_freq={{ config_sdram_freq }}" }
+    - { regexp: 'over_voltage', line: "over_voltage={{ config_over_voltage }}" }
+  notify: reboot pi
+
+- name: Increase swapsize
+  become: true
+  lineinfile: 
+    dest: /etc/dphys-swapfile
+    regexp: 'CONF_SWAPSIZE='
+    line: 'CONF_SWAPSIZE=1024'
+  notify: reboot pi
+
+- name: Execute reboot handler
+  meta: flush_handlers

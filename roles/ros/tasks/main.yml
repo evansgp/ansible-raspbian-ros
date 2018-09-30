@@ -37,6 +37,7 @@
       - python-rosinstall
       - build-essential
       - cmake
+  register: ros_installed
 
 - name: Check whether rosdep has been initialised
   stat:

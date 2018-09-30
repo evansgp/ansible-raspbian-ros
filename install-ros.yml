@@ -4,6 +4,10 @@
   hosts: ros
   remote_user: pi
   roles:
-    - raspbian
-    - ros
-    - workspace
+    - role: raspbian
+      vars:
+        config_arm_freq: 1600
+        config_over_voltage: 4
+    - role: ros
+    # uncommect when reboot issue is resolved
+    # - role: workspace
