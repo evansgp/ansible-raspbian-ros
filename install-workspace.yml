@@ -4,7 +4,4 @@
   hosts: ros
   remote_user: pi
   roles:
-    # uncommect when reboot issue is resolved
-    # - raspbian
-    # - ros
     - workspace

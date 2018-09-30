@@ -38,7 +38,7 @@
   shell: ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/kinetic
   args:
     chdir: /home/pi/ros_catkin_ws
-  when: updated_workspace.changed or force_build
+  when: updated_workspace.changed or force_build is defined
 
 - name: Source ROS environment
   lineinfile:

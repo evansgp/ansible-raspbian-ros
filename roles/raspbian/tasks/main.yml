@@ -55,7 +55,7 @@
     - { regexp: 'core_freq', line: "core_freq={{ config_core_freq }}" }
     - { regexp: 'sdram_freq', line: "sdram_freq={{ config_sdram_freq }}" }
     - { regexp: 'over_voltage', line: "over_voltage={{ config_over_voltage }}" }
-  notify: reboot pi
+  register: overclock
 
 - name: Increase swapsize
   become: true
@@ -63,7 +63,19 @@
     dest: /etc/dphys-swapfile
     regexp: 'CONF_SWAPSIZE='
     line: 'CONF_SWAPSIZE=1024'
-  notify: reboot pi
+  register: swapsize
 
-- name: Execute reboot handler
-  meta: flush_handlers
+- name: Reboot immediately if there was a change.
+  become: true
+  shell: "sleep 5 && reboot"
+  async: 1
+  poll: 0
+  when: overclock.changed or swapsize.changed
+
+- name: Wait for the reboot to complete if there was a change.
+  wait_for_connection:
+    connect_timeout: 20
+    sleep: 5
+    delay: 5
+    timeout: 300
+  when: overclock.changed or swapsize.changed
