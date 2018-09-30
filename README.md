@@ -26,7 +26,7 @@ Add an entry to your `/etc/ansible/hosts`:
 
 ```
 [pi]
-ros ansible_host=192.168.3.157
+ros ansible_host=192.168.3.157 ansible_user=pi
 ```
 
 ## Playbooks
