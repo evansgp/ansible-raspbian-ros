@@ -8,5 +8,5 @@
       vars:
         config_arm_freq: 1600
         config_over_voltage: 4
-    - role: ros
+    - role: ros-node
     - role: workspace

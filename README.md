@@ -31,7 +31,7 @@ ros ansible_host=192.168.3.157 ansible_user=pi
 
 ## Playbooks
 
-### install-ros.yml
+### raspbian-ros-node.yml
 
 Configures raspbian, installs ROS and a robot specific workspace:
 
