@@ -1,0 +1,8 @@
+---
+
+- name: Install ROS full desktop on Xenial
+  hosts: all
+  remote_user: vagrant
+  roles:
+    - role: xenial
+    - role: ros-desktop

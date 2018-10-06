@@ -1,0 +1,55 @@
+---
+
+- name: Install dirmngr
+  become: true
+  apt:
+    name: "dirmngr"
+    state: latest
+
+- name: Add ROS key
+  become: true
+  apt_key:
+    keyserver: hkp://ha.pool.sks-keyservers.net:80 
+    id: 421C365BD9FF1F717815A3895523BAEEB01FA116
+
+- name: Add ROS apt repo
+  become: true
+  apt_repository:
+    repo: deb http://packages.ros.org/ros/ubuntu xenial main
+    state: present
+    filename: ros
+
+- name: Update apt cache
+  become: true
+  apt:
+    update_cache: yes
+
+- name: Install ROS dependencies
+  become: true
+  apt:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+      - ros-kinetic-desktop-full
+      - python-rosdep
+      - python-rosinstall-generator
+      - python-wstool
+      - python-rosinstall
+      - build-essential
+      - cmake
+  register: ros_installed
+
+- name: Check whether rosdep has been initialised
+  stat:
+    path: /etc/ros/rosdep
+  register: ros_initialised
+
+- name: Initialise rosdep
+  become: true
+  shell: rosdep init
+  when: ros_initialised.stat.exists == False
+
+- name: Update rosdep
+  command: rosdep update
+  when: ros_installed.changed or ros_initialised.stat.exists == False
