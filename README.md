@@ -36,7 +36,7 @@ Uses the following roles:
 Configures raspbian, installs ROS and a robot specific workspace:
 
 ```bash
-ansible-playbook install-ros.yml
+ansible-playbook raspbian-ros-node.yml
 ```
 
 There are some `--extra-vars` that can be defined when running the playbook:
