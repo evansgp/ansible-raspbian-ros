@@ -58,13 +58,28 @@
   when: can_overclock
   register: overclock
 
-- name: Enable serial
+- name: Install interface tools
   become: true
-  lineinfile:
+  apt:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+      - i2c-tools
+      - libi2c-dev
+
+- name: Enable interfaces
+  become: true
+  lineinfile: 
     dest: /boot/config.txt
-    regexp: enable_uart
-    line: enable_uart=1
-  register: reboot
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  with_items:
+    - { regexp: 'dtparam=i2c_arm', line: "dtparam=i2c_arm=on" }
+    - { regexp: 'dtparam=i2c1', line: "dtparam=i2c1=on" }
+    - { regexp: 'dtparam=spi', line: "dtparam=spi=on" }
+    - { regexp: 'enable_uart', line: "enable_uart=1" }
+  register: interfaces
 
 - name: Increase swapsize
   become: true
@@ -79,7 +94,8 @@
   shell: "sleep 5 && reboot"
   async: 1
   poll: 0
-  when: overclock.changed or swapsize.changed or reboot.changed
+  when: overclock.changed or swapsize.changed or interfaces.changed
+  register: rebooting
 
 - name: Wait for the reboot to complete if there was a change.
   wait_for_connection:
@@ -87,4 +103,4 @@
     sleep: 5
     delay: 5
     timeout: 300
-  when: overclock.changed or swapsize.changed or reboot.changed
+  when: rebooting.changed
