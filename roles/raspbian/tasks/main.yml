@@ -67,6 +67,7 @@
     packages:
       - i2c-tools
       - libi2c-dev
+      - screen
 
 - name: Enable interfaces
   become: true
