@@ -4,3 +4,4 @@ config_arm_freq: 1400
 config_core_freq: 400
 config_sdram_freq: 500
 config_over_voltage: 0
+can_overclock: false

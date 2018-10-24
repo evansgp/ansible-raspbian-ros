@@ -55,6 +55,7 @@
     - { regexp: 'core_freq', line: "core_freq={{ config_core_freq }}" }
     - { regexp: 'sdram_freq', line: "sdram_freq={{ config_sdram_freq }}" }
     - { regexp: 'over_voltage', line: "over_voltage={{ config_over_voltage }}" }
+  when: can_overclock
   register: overclock
 
 - name: Increase swapsize
