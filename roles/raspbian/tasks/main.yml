@@ -58,6 +58,14 @@
   when: can_overclock
   register: overclock
 
+- name: Enable serial
+  become: true
+  lineinfile:
+    dest: /boot/config.txt
+    regexp: enable_uart
+    line: enable_uart=1
+  register: reboot
+
 - name: Increase swapsize
   become: true
   lineinfile: 
@@ -71,7 +79,7 @@
   shell: "sleep 5 && reboot"
   async: 1
   poll: 0
-  when: overclock.changed or swapsize.changed
+  when: overclock.changed or swapsize.changed or reboot.changed
 
 - name: Wait for the reboot to complete if there was a change.
   wait_for_connection:
@@ -79,4 +87,4 @@
     sleep: 5
     delay: 5
     timeout: 300
-  when: overclock.changed or swapsize.changed
+  when: overclock.changed or swapsize.changed or reboot.changed
