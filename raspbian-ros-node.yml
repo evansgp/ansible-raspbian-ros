@@ -6,8 +6,8 @@
   roles:
     - role: raspbian
       vars:
-        config_arm_freq: 1600
-        config_over_voltage: 4
         can_overclock: false
     - role: ros-node
+      vars:
+        workdir: /home/pi/workdir
     - role: workspace

@@ -52,3 +52,45 @@
 - name: Update rosdep
   command: rosdep update
   when: ros_installed.changed or ros_initialised.stat.exists == False
+
+- name: Install librealsense dependencies
+  become: true
+  apt:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+      - git
+      - libglfw3-dev
+      - libssl-dev
+      - libusb-1.0-0-dev
+      - pkg-config
+      - libgtk-3-dev
+
+- name: Get librealsense
+  git:
+    repo: https://github.com/IntelRealSense/librealsense.git 
+    dest: "{{ workdir }}/librealsense"
+
+- name: Copy librealsense udev rules
+  become: true
+  copy:
+    src: "{{ workdir }}/librealsense/config/99-realsense-libusb.rules"
+    dest: /etc/udev/rules.d/
+    remote_src: yes
+
+- name: Make librealsense build dir
+  file:
+    path: "{{ workdir }}/librealsense/build"
+    state: directory
+
+- name: Run cmake for librealsense
+  command: cmake ../ -DBUILD_EXAMPLES=true -DBUILD_GRAPHICAL_EXAMPLES=false -DCMAKE_BUILD_TYPE=Release
+  args:
+    chdir: "{{ workdir }}/librealsense/build"
+
+- name: Build and install librealsense (takes a while...)
+  make:
+    chdir: "{{ workdir }}/librealsense/build"
+    target: install
+  become: yes
